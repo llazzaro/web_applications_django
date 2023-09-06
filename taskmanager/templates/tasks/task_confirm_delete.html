@@ -1,4 +1,4 @@
-{% extends "base_generic.html" %}
+{% extends "tasks/base.html" %}
 
 {% block content %}
   <h1>Delete Task</h1>
@@ -7,5 +7,5 @@
   {% csrf_token %}
   <button type="submit">Yes, delete</button>
   </form>
-  <a href="{% url 'task-detail' task.id %}">No, take me back</a>
+  <a href="{% url 'tasks:task-detail' task.id %}">No, take me back</a>
 {% endblock %}

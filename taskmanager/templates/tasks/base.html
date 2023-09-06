@@ -11,9 +11,11 @@
 <body>
 
     {% include "tasks/_header.html" %}
-    <main>
-        {% block content %}
-        {% endblock %}
+    <main class="d-flex flex-column justify-content-center align-items-center"></main>
+        <div class="text-center">
+            {% block content %}
+            {% endblock %}
+        </div>
     </main>
     {% include "tasks/_footer.html" %}
     <!-- JS files -->

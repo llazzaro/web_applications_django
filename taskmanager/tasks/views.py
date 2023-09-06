@@ -1,7 +1,13 @@
 # Code for tasks/views.py
 from datetime import date
 
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import (
+    Http404,
+    HttpRequest,
+    HttpResponse,
+    HttpResponseRedirect,
+    JsonResponse,
+)
 from django.shortcuts import redirect, render
 from django.template import loader
 from django.urls import reverse, reverse_lazy
@@ -9,11 +15,11 @@ from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from . import services
-from .mixins import UserIsOwnerMixin
+from .mixins import SprintTaskMixin
 from .models import Task
 
 
-class TaskListView(UserIsOwnerMixin, ListView):
+class TaskListView(ListView):
     model = Task
     template_name = "task_list.html"
     context_object_name = "tasks"
@@ -21,32 +27,32 @@ class TaskListView(UserIsOwnerMixin, ListView):
 
 class TaskDetailView(DetailView):
     model = Task
-    template_name = "task_detail.html"
+    template_name = "tasks/task_detail.html"
     context_object_name = "task"
 
 
 class TaskCreateView(CreateView):
     model = Task
-    template_name = "task_form.html"
-    fields = ("name", "description", "start_date", "end_date")
+    template_name = "tasks/task_form.html"
+    fields = ("title", "description")
 
     def get_success_url(self):
-        return reverse_lazy("task-detail", kwargs={"pk": self.object.id})
+        return reverse_lazy("tasks:task-detail", kwargs={"pk": self.object.id})
 
 
-class TaskUpdateView(UpdateView):
+class TaskUpdateView(SprintTaskMixin, UpdateView):
     model = Task
-    template_name = "task_form.html"
-    fields = ("name", "description", "start_date", "end_date")
+    template_name = "tasks/task_form.html"
+    fields = ("title", "description")
 
     def get_success_url(self):
-        return reverse_lazy("task-detail", kwargs={"pk": self.object.id})
+        return reverse_lazy("tasks:task-detail", kwargs={"pk": self.object.id})
 
 
 class TaskDeleteView(DeleteView):
     model = Task
-    template_name = "task_confirm_delete.html"
-    success_url = reverse_lazy("task-list")
+    template_name = "tasks/task_confirm_delete.html"
+    success_url = reverse_lazy("tasks:task-list")
 
 
 def task_home(request):
@@ -71,7 +77,8 @@ def create_task_on_sprint(request: HttpRequest, sprint_id: int) -> HttpResponseR
         task = services.create_task_and_add_to_sprint(
             task_data, sprint_id, request.user
         )
-        return redirect("task-detail", task_id=task.id)
+        return redirect("tasks:task-detail", task_id=task.id)
+    raise Http404("Not found")
 
 
 def claim_task_view(request, task_id):

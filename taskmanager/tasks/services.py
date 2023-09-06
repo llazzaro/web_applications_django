@@ -4,7 +4,9 @@ from datetime import date
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from django.db.models.functions import F, TruncDate
+from django.db.models import F
+from django.db.models.functions import TruncDate
+from django.shortcuts import get_object_or_404
 
 from .models import Sprint, Task
 
@@ -13,13 +15,20 @@ class TaskAlreadyClaimedException(Exception):
     pass
 
 
+def can_add_task_to_sprint(task, sprint_id):
+    """
+    Checks if a task can be added to a sprint based on the sprint's date range.
+    """
+    sprint = get_object_or_404(Sprint, id=sprint_id)
+    return sprint.start_date <= task.created_at.date() <= sprint.end_date
+
+
 def get_task_by_date(by_date: date) -> list[Task]:
     return Task.objects.annotate(date_created=TruncDate("created_at")).filter(
         date_created=by_date
     )
 
 
-@transaction.atomic
 def create_task_and_add_to_sprint(
     task_data: dict[str, str], sprint_id: int, creator: User
 ) -> Task:
@@ -41,17 +50,17 @@ def create_task_and_add_to_sprint(
                                Current date is not within the \
                                sprint's start and end dates."
         )
+    with transaction.atomic():
+        # Create the task
+        task = Task.objects.create(
+            title=task_data["title"],
+            description=task_data.get("description", ""),
+            status=task_data.get("status", "UNASSIGNED"),
+            creator=creator,
+        )
 
-    # Create the task
-    task = Task.objects.create(
-        title=task_data["title"],
-        description=task_data.get("description", ""),
-        status=task_data.get("status", "UNASSIGNED"),
-        creator=creator,
-    )
-
-    # Add the task to the sprint
-    sprint.tasks.add(task)
+        # Add the task to the sprint
+        sprint.tasks.add(task)
 
     return task
 

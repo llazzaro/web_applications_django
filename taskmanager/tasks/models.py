@@ -2,7 +2,11 @@ from django.contrib.auth.models import User
 from django.db import models
 
 
-class Task(models.Model):
+class VersionMixing:
+    version = models.IntegerField(default=0)
+
+
+class Task(models.Model, VersionMixing):
     STATUS_CHOICES = [
         ("UNASSIGNED", "Unassigned"),
         ("IN_PROGRESS", "In Progress"),
