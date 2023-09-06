@@ -1,4 +1,4 @@
-{% extends "base_generic.html" %}
+{% extends "tasks/base.html" %}
 
 {% block content %}
   <h1>New Task</h1>
@@ -6,5 +6,6 @@
   {% csrf_token %}
   {{ form.as_p }}
   <button type="submit">Save</button>
+  <a href="{% url 'tasks:task-list' %}">No, take me back</a>
   </form>
 {% endblock %}
