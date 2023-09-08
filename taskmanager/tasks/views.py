@@ -19,7 +19,7 @@ from tasks.forms import ContactForm, EpicFormSet, TaskFormWithRedis
 
 from . import services
 from .mixins import SprintTaskMixin
-from .models import Task
+from .models import Sprint, Task
 
 
 class TaskListView(PermissionRequiredMixin, ListView):
