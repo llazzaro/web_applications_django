@@ -4,13 +4,13 @@ from datetime import date
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
 from django.template import loader
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from . import services
 from .mixins import SprintTaskMixin
-from .models import Task
+from .models import Sprint, Task
 
 
 class TaskListView(ListView):
@@ -50,7 +50,20 @@ class TaskDeleteView(DeleteView):
 
 
 def task_home(request):
-    return redirect(reverse("tasks:ask-list"))
+    unassigned_tasks = Task.objects.filter(status="UNASSIGNED")
+    in_progress_tasks = Task.objects.filter(status="IN_PROGRESS")
+    done_tasks = Task.objects.filter(status="DONE")
+    archived_tasks = Task.objects.filter(status="ARCHIVED")
+
+    context = {
+        "unassigned_tasks": unassigned_tasks,
+        "in_progress_tasks": in_progress_tasks,
+        "done_tasks": done_tasks,
+        "archived_tasks": archived_tasks,
+        "sprint": Sprint.objects.get(pk=2),
+    }
+
+    return render(request, "tasks/home.html", context)
 
 
 def task_by_date(request: HttpRequest, by_date: date) -> HttpResponse:

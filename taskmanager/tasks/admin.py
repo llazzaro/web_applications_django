@@ -1,5 +1,5 @@
-from django.contrib import admin  # noqa: F401
-from tasks.models import Task
+from django.contrib import admin
+from tasks.models import Sprint, Task
 
 
 class TaskAdmin(admin.ModelAdmin):
@@ -35,4 +35,9 @@ class TaskAdmin(admin.ModelAdmin):
     mark_archived.short_description = "Mark selected tasks as archived"
 
 
+class SprintAdmin(admin.ModelAdmin):
+    ...
+
+
 admin.site.register(Task, TaskAdmin)
+admin.site.register(Sprint, SprintAdmin)
