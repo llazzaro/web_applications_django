@@ -28,11 +28,6 @@ urlpatterns = [
         TemplateView.as_view(template_name="tasks/contact_success.html"),
         name="contact-success",
     ),
-    path(
-        "prueba/",
-        TemplateView.as_view(template_name="tasks/prueba.html"),
-        name="prueba",
-    ),
     path("help/", TemplateView.as_view(template_name="tasks/help.html"), name="help"),
     path("tasks/", TaskListView.as_view(), name="task-list"),  # GET
     path("tasks/new/", TaskCreateView.as_view(), name="task-create"),  # POST
