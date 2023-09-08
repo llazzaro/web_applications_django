@@ -17,7 +17,7 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from . import services
 from .mixins import SprintTaskMixin
-from .models import Task
+from .models import Sprint, Task
 
 
 class TaskListView(ListView):
