@@ -67,6 +67,30 @@ files = [
 Django = ">=3.2"
 
 [[package]]
+name = "django-storages"
+version = "1.14"
+description = "Support for many storage backends in Django"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "django-storages-1.14.tar.gz", hash = "sha256:6c97e5faad829c923a1262206281742c484d76d43b332a196ddcc242b909c551"},
+    {file = "django_storages-1.14-py3-none-any.whl", hash = "sha256:11280a883b13812df548f3cfe9c10280afc0d4727c8babdee369a75e71158f16"},
+]
+
+[package.dependencies]
+Django = ">=3.2"
+
+[package.extras]
+azure = ["azure-storage-blob (>=12.0.0)"]
+boto3 = ["boto3 (>=1.4.4)"]
+dropbox = ["dropbox (>=7.2.1)"]
+google = ["google-cloud-storage (>=1.27.0)"]
+libcloud = ["apache-libcloud"]
+s3 = ["boto3 (>=1.4.4)"]
+sftp = ["paramiko (>=1.15.0)"]
+
+[[package]]
 name = "exceptiongroup"
 version = "1.1.1"
 description = "Backport of PEP 654 (exception groups)"
@@ -224,4 +248,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "39685b77a9cb656989bade015861675c694002448f798c33b604b244d9ef49a7"
+content-hash = "4c1347b64af1356571bacf2a7b3997057a2e3a12d28b8e186c2f51338c714800"

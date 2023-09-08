@@ -1,4 +1,5 @@
 # Code for tasks/views.py
+from collections import defaultdict
 from datetime import date
 
 from django.http import (
@@ -10,7 +11,7 @@ from django.http import (
 )
 from django.shortcuts import redirect, render
 from django.template import loader
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
@@ -56,7 +57,26 @@ class TaskDeleteView(DeleteView):
 
 
 def task_home(request):
-    return redirect(reverse("tasks:ask-list"))
+    # Fetch all tasks at once
+    tasks = Task.objects.filter(
+        status__in=["UNASSIGNED", "IN_PROGRESS", "DONE", "ARCHIVED"]
+    )
+
+    # Initialize dictionaries to hold tasks by status
+    context = defaultdict(list)
+
+    # Categorize tasks into their respective lists
+    for task in tasks:
+        if task.status == "UNASSIGNED":
+            context["unassigned_tasks"].append(task)
+        elif task.status == "IN_PROGRESS":
+            context["in_progress_tasks"].append(task)
+        elif task.status == "DONE":
+            context["done_tasks"].append(task)
+        elif task.status == "ARCHIVED":
+            context["archived_tasks"].append(task)
+
+    return render(request, "tasks/home.html", context)
 
 
 def task_by_date(request: HttpRequest, by_date: date) -> HttpResponse:
