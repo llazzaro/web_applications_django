@@ -2,7 +2,6 @@ from accounts.forms import CustomAuthenticationForm
 from accounts.services import generate_token, issue_jwt_refresh_token, issue_jwt_token
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LoginView
 from django.shortcuts import redirect, render
