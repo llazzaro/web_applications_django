@@ -1,5 +1,5 @@
-import datetime
-from datetime import date
+from datetime import date, datetime
+from typing import Any
 
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
@@ -8,12 +8,62 @@ from django.db import transaction
 from django.db.models import F
 from django.db.models.functions import TruncDate
 from django.shortcuts import get_object_or_404
-
-from .models import Epic, Sprint, Task
+from tasks.enums import TaskStatus
+from tasks.models import Epic, Sprint, Task
 
 
 class TaskAlreadyClaimedException(Exception):
     pass
+
+
+def create_task(creator: User, **task_data: Any) -> Task:
+    task = Task(**task_data)
+    task.creator = creator
+    task.save()
+    return task
+
+
+def update_task(task_id: int, task_data: dict) -> None:
+    task = Task.objects.filter(id=task_id).first()
+    if not task:
+        return
+
+    # Iterate over the task data and set the attributes on the task instance
+    for field, value in task_data.items():
+        setattr(task, field, value)
+
+    # Save the task instance, which applies the updates to the database
+    task.save()
+
+
+def delete_task(task_id: int) -> None:
+    task = Task.objects.filter(id=task_id).first()
+    if not task:
+        return
+    task.delete()
+
+
+def get_task(task_id: int) -> Task | None:
+    return (
+        Task.objects.select_related("owner")
+        .select_related("creator")
+        .filter(pk=task_id)
+        .first()
+    )
+
+
+def search_tasks(
+    created_at: date,
+    status: TaskStatus,
+) -> list[Task]:
+    tasks = Task.objects.filter(created_at__date=created_at, status=status).order_by(
+        "status", "created_at"
+    )
+    return tasks
+
+
+def list_tasks():
+    return Task.objects.all()
 
 
 def can_add_task_to_sprint(task, sprint_id):

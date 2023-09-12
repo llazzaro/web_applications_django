@@ -1,5 +1,7 @@
 from accounts.forms import CustomAuthenticationForm
+from accounts.services import generate_token, issue_jwt_refresh_token, issue_jwt_token
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LoginView
 from django.shortcuts import redirect, render
@@ -22,3 +24,19 @@ def register(request):
 
 class CustomLoginView(LoginView):
     authentication_form = CustomAuthenticationForm
+
+
+@login_required
+def token_generation_view(request):
+    """
+    A view that displays the user's API token. If a token does not exist,
+    it generates a new one. This view handles only GET requests.
+    """
+    token = generate_token(request.user)
+    jwt_token = issue_jwt_token(request.user)
+    refresh_token = issue_jwt_refresh_token(request.user)
+    return render(
+        request,
+        "accounts/token_display.html",
+        {"token": token, "jwt_token": jwt_token, "refresh_token": refresh_token},
+    )

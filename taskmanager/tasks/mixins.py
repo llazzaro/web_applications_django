@@ -1,6 +1,5 @@
 from django.http import HttpResponseBadRequest
-
-from .services import can_add_task_to_sprint
+from tasks.services import can_add_task_to_sprint
 
 
 class SprintTaskMixin:

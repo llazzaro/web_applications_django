@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 
@@ -39,3 +41,11 @@ class TaskManagerUser(AbstractUser):
 
     class Meta:
         unique_together = ("organization", "username", "email")
+
+
+class ApiToken(models.Model):
+    token = models.UUIDField(default=uuid.uuid4, unique=True)
+    user = models.ForeignKey(TaskManagerUser, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.token)

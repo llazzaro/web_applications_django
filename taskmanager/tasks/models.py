@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from tasks.enums import TaskStatus
 
 
 class VersionMixing:
@@ -8,10 +9,7 @@ class VersionMixing:
 
 class Task(models.Model, VersionMixing):
     STATUS_CHOICES = [
-        ("UNASSIGNED", "Unassigned"),
-        ("IN_PROGRESS", "In Progress"),
-        ("DONE", "Completed"),
-        ("ARCHIVED", "Archived"),
+        (status.value, status.name.replace("_", " ").title()) for status in TaskStatus
     ]
 
     title = models.CharField(max_length=200)
@@ -19,7 +17,7 @@ class Task(models.Model, VersionMixing):
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
-        default="UNASSIGNED",
+        default=TaskStatus.UNASSIGNED.value,
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
