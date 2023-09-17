@@ -1,4 +1,3 @@
-# Code for tasks/views.py
 from collections import defaultdict
 from datetime import date
 
@@ -20,7 +19,7 @@ from tasks.forms import ContactForm, EpicFormSet, TaskFormWithRedis
 
 from . import services
 from .mixins import SprintTaskMixin
-from .models import Sprint, Task
+from .models import Task
 
 
 class TaskListView(PermissionRequiredMixin, ListView):
