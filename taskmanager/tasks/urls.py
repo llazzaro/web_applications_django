@@ -3,12 +3,14 @@ from django.views.generic import TemplateView
 
 from . import converters
 from .views import (
+    ContactFormView,
     TaskCreateView,
     TaskDeleteView,
     TaskDetailView,
     TaskListView,
     TaskUpdateView,
     create_task_on_sprint,
+    manage_epic_tasks,
     task_by_date,
     task_home,
 )
@@ -20,6 +22,17 @@ handler404 = "tasks.views.custom_404"
 
 urlpatterns = [
     path("", task_home, name="task-home"),
+    path("contact/", ContactFormView.as_view(), name="contact"),
+    path(
+        "contact-success/",
+        TemplateView.as_view(template_name="tasks/contact_success.html"),
+        name="contact-success",
+    ),
+    path(
+        "prueba/",
+        TemplateView.as_view(template_name="tasks/prueba.html"),
+        name="prueba",
+    ),
     path("help/", TemplateView.as_view(template_name="tasks/help.html"), name="help"),
     path("tasks/", TaskListView.as_view(), name="task-list"),  # GET
     path("tasks/new/", TaskCreateView.as_view(), name="task-create"),  # POST
@@ -36,4 +49,5 @@ urlpatterns = [
         create_task_on_sprint,
         name="task-add-to-sprint",
     ),
+    path("epic/<int:epic_pk>/", manage_epic_tasks, name="task-batch-create"),
 ]

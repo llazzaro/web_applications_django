@@ -12,8 +12,9 @@ from django.http import (
 from django.shortcuts import redirect, render
 from django.template import loader
 from django.urls import reverse_lazy
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView, FormView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from tasks.forms import ContactForm, EpicFormSet, TaskFormWithRedis
 
 from . import services
 from .mixins import SprintTaskMixin
@@ -35,7 +36,7 @@ class TaskDetailView(DetailView):
 class TaskCreateView(CreateView):
     model = Task
     template_name = "tasks/task_form.html"
-    fields = ("title", "description")
+    form_class = TaskFormWithRedis
 
     def get_success_url(self):
         return reverse_lazy("tasks:task-detail", kwargs={"pk": self.object.id})
@@ -44,7 +45,7 @@ class TaskCreateView(CreateView):
 class TaskUpdateView(SprintTaskMixin, UpdateView):
     model = Task
     template_name = "tasks/task_form.html"
-    fields = ("title", "description")
+    form_class = TaskFormWithRedis
 
     def get_success_url(self):
         return reverse_lazy("tasks:task-detail", kwargs={"pk": self.object.id})
@@ -117,3 +118,41 @@ def claim_task_view(request, task_id):
 
 def custom_404(request, exception):
     return render(request, "404.html", {}, status=404)
+
+
+class ContactFormView(FormView):
+    template_name = "tasks/contact_form.html"
+    form_class = ContactForm
+    success_url = reverse_lazy("tasks:contact-success")
+
+    def form_valid(self, form):
+        subject = form.cleaned_data.get("subject")
+        message = form.cleaned_data.get("message")
+        from_email = form.cleaned_data.get("from_email")
+
+        # You can use Django's send_mail function,
+        # here is a simple example that sends the message to your email.
+        # Please update 'your-email@example.com' with your email and configure
+        # the EMAIL settings in your Django settings file
+        services.send_contact_email(
+            subject, message, from_email, ["your-email@example.com"]
+        )
+
+        return super().form_valid(form)
+
+
+def manage_epic_tasks(request, epic_pk):
+    epic = services.get_epic_by_id(epic_pk)
+    if not epic:
+        raise Http404("Epic does not exist")
+    if request.method == "POST":
+        formset = EpicFormSet(request.POST, queryset=services.get_tasks_for_epic(epic))
+        if formset.is_valid():
+            tasks = formset.save(commit=False)
+            services.save_tasks_for_epic(epic, tasks)
+            formset.save_m2m()  # handle many-to-many relations if there are any
+            return redirect("tasks:task-list")
+    else:
+        formset = EpicFormSet(queryset=services.get_tasks_for_epic(epic))
+
+    return render(request, "tasks/manage_epic.html", {"formset": formset, "epic": epic})

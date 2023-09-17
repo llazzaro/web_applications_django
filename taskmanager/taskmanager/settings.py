@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "django_extensions",
     "tasks",
     "storages",
+    "widget_tweaks",
 ]
 
 MIDDLEWARE = [
@@ -133,3 +134,28 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+if DEBUG:
+    # Using the console backend will simply print the emails to the console
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = os.getenv("EMAIL_HOST", "mailhog")
+    EMAIL_PORT = int(os.getenv("EMAIL_PORT", "1025"))
+    EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "False") == "True"
+    EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "default@example.com")
+    EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "defaultpassword")
+
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+    }
+}
+
+MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
+MEDIA_URL = "/media/"

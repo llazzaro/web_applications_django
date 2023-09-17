@@ -24,12 +24,14 @@ class Task(models.Model, VersionMixing):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(
-        User, related_name="created_tasks", on_delete=models.CASCADE
+        User, related_name="created_tasks", on_delete=models.CASCADE, null=True
     )
     owner = models.ForeignKey(
         User, related_name="owned_tasks", on_delete=models.SET_NULL, null=True
     )
     version = models.IntegerField(default=0)
+    file_upload = models.FileField(upload_to="tasks/files/", null=True, blank=True)
+    image_upload = models.ImageField(upload_to="tasks/images/", null=True, blank=True)
 
     class Meta:
         constraints = [
@@ -79,3 +81,12 @@ class Sprint(models.Model):
                 name="end_date_after_start_date",
             ),
         ]
+
+
+class Email(models.Model):
+    email = models.EmailField()
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name="watchers")
+
+
+class FormSubmission(models.Model):
+    uuid = models.UUIDField(unique=True)
