@@ -11,8 +11,15 @@
     </div>
 
     <!-- Right side -->
-    <div class="d-flex">
+    <div class="d-flex align-items-center">
         <input type="text" class="form-control" id="search" placeholder="Search">
         <button type="button" class="btn btn-success ml-2">Search</button>
+
+        <!-- Login/Logout links -->
+        {% if user.is_authenticated %}
+            <a href="{% url 'accounts:logout' %}" class="btn btn-danger ml-2" role="button">Logout</a>
+        {% else %}
+            <a href="{% url 'accounts:login' %}" class="btn btn-info ml-2" role="button">Login</a>
+        {% endif %}
     </div>
 </header>

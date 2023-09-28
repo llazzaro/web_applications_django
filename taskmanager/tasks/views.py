@@ -2,6 +2,8 @@
 from collections import defaultdict
 from datetime import date
 
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import (
     Http404,
     HttpRequest,
@@ -9,7 +11,7 @@ from django.http import (
     HttpResponseRedirect,
     JsonResponse,
 )
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.template import loader
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, FormView, ListView
@@ -21,19 +23,23 @@ from .mixins import SprintTaskMixin
 from .models import Task
 
 
-class TaskListView(ListView):
+class TaskListView(PermissionRequiredMixin, ListView):
+    permission_required = ("tasks.view_task", "tasks.custom_task")
+
     model = Task
     template_name = "task_list.html"
     context_object_name = "tasks"
+    login_url = "accounts/login/"
+    raise_exception = True
 
 
-class TaskDetailView(DetailView):
+class TaskDetailView(LoginRequiredMixin, DetailView):
     model = Task
     template_name = "tasks/task_detail.html"
     context_object_name = "task"
 
 
-class TaskCreateView(CreateView):
+class TaskCreateView(LoginRequiredMixin, CreateView):
     model = Task
     template_name = "tasks/task_form.html"
     form_class = TaskFormWithRedis
@@ -41,8 +47,15 @@ class TaskCreateView(CreateView):
     def get_success_url(self):
         return reverse_lazy("tasks:task-detail", kwargs={"pk": self.object.id})
 
+    def form_valid(self, form):
+        # Set the creator to the currently logged in user
+        form.instance.creator = self.request.user
+        return super().form_valid(form)
 
-class TaskUpdateView(SprintTaskMixin, UpdateView):
+
+class TaskUpdateView(PermissionRequiredMixin, SprintTaskMixin, UpdateView):
+    permission_required = ("tasks.change_task",)
+
     model = Task
     template_name = "tasks/task_form.html"
     form_class = TaskFormWithRedis
@@ -50,13 +63,30 @@ class TaskUpdateView(SprintTaskMixin, UpdateView):
     def get_success_url(self):
         return reverse_lazy("tasks:task-detail", kwargs={"pk": self.object.id})
 
+    def has_permission(self):
+        # First, check if the user has the general permission to edit tasks
+        has_general_permission = super().has_permission()
 
-class TaskDeleteView(DeleteView):
+        # Then check if the user is either the
+        # creator or the owner of this task
+        task_id = self.kwargs.get("pk")
+        task = get_object_or_404(Task, id=task_id)
+
+        is_creator_or_owner = (
+            task.creator == self.request.user or task.owner == self.request.user
+        )
+
+        # Return True only if both conditions are met
+        return has_general_permission and is_creator_or_owner
+
+
+class TaskDeleteView(LoginRequiredMixin, DeleteView):
     model = Task
     template_name = "tasks/task_confirm_delete.html"
     success_url = reverse_lazy("tasks:task-list")
 
 
+@login_required
 def task_home(request):
     # Fetch all tasks at once
     tasks = Task.objects.filter(
@@ -80,6 +110,7 @@ def task_home(request):
     return render(request, "tasks/home.html", context)
 
 
+@login_required
 def task_by_date(request: HttpRequest, by_date: date) -> HttpResponse:
     template = loader.get_template("task_list.html")
     tasks = services.get_task_by_date(by_date)
@@ -88,6 +119,7 @@ def task_by_date(request: HttpRequest, by_date: date) -> HttpResponse:
     return HttpResponse(html)
 
 
+@permission_required("tasks.add_task")
 def create_task_on_sprint(request: HttpRequest, sprint_id: int) -> HttpResponseRedirect:
     if request.method == "POST":
         task_data: dict[str, str] = {
@@ -102,6 +134,7 @@ def create_task_on_sprint(request: HttpRequest, sprint_id: int) -> HttpResponseR
     raise Http404("Not found")
 
 
+@login_required
 def claim_task_view(request, task_id):
     user_id = (
         request.user.id
@@ -141,6 +174,7 @@ class ContactFormView(FormView):
         return super().form_valid(form)
 
 
+@login_required
 def manage_epic_tasks(request, epic_pk):
     epic = services.get_epic_by_id(epic_pk)
     if not epic:

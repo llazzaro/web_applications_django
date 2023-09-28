@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.db import models
 
 
@@ -24,10 +24,16 @@ class Task(models.Model, VersionMixing):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(
-        User, related_name="created_tasks", on_delete=models.CASCADE, null=True
+        settings.AUTH_USER_MODEL,
+        related_name="created_tasks",
+        on_delete=models.CASCADE,
+        null=False,
     )
     owner = models.ForeignKey(
-        User, related_name="owned_tasks", on_delete=models.SET_NULL, null=True
+        settings.AUTH_USER_MODEL,
+        related_name="owned_tasks",
+        on_delete=models.SET_NULL,
+        null=True,
     )
     version = models.IntegerField(default=0)
     file_upload = models.FileField(upload_to="tasks/files/", null=True, blank=True)
@@ -43,6 +49,9 @@ class Task(models.Model, VersionMixing):
                 name="status_check",
             ),
         ]
+        permissions = [
+            ("custom_task", "Custom Task Permission"),
+        ]
 
 
 class Epic(models.Model):
@@ -51,7 +60,7 @@ class Epic(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(
-        User, related_name="created_epics", on_delete=models.CASCADE
+        settings.AUTH_USER_MODEL, related_name="created_epics", on_delete=models.CASCADE
     )
     tasks = models.ManyToManyField("Task", related_name="epics", blank=True)
     # This field might be used to denote the progress of the epic
@@ -66,7 +75,9 @@ class Sprint(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(
-        User, related_name="created_sprints", on_delete=models.CASCADE
+        settings.AUTH_USER_MODEL,
+        related_name="created_sprints",
+        on_delete=models.CASCADE,
     )
     tasks = models.ManyToManyField("Task", related_name="sprints", blank=True)
     # The epic to which this sprint is contributing

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "tasks",
     "storages",
     "widget_tweaks",
+    "accounts",
 ]
 
 MIDDLEWARE = [
@@ -53,6 +54,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "tasks.middlewares.RequestTimeMiddleware",
 ]
 
 ROOT_URLCONF = "taskmanager.urls"
@@ -159,3 +161,17 @@ CACHES = {
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 MEDIA_URL = "/media/"
+
+LOGIN_REDIRECT_URL = "tasks:task-home"
+LOGOUT_REDIRECT_URL = "accounts:login"
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "localhost"
+EMAIL_PORT = 1025
+EMAIL_USE_TLS = False
+
+AUTH_USER_MODEL = "accounts.TaskManagerUser"
+
+AUTHENTICATION_BACKENDS = [
+    "accounts.backends.OrganizationUsernameOrEmailBackend",
+]
