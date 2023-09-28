@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 import uuid
 
+=======
+>>>>>>> 240b391 (feat(authentication): add authentication to the task manager)
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 
