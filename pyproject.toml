@@ -23,6 +23,11 @@ django-ratelimit = "^4.1.0"
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.0"
 django-extensions = "^3.2.3"
+pytest-django = "^4.5.2"
+factory-boy = "3.0.1"
+pytest-bdd = "^7.0.0"
+pytest-cov = "^4.1.0"
+pytest-xdist = "^3.3.1"
 
 [build-system]
 requires = ["poetry-core"]

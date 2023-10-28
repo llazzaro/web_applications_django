@@ -89,7 +89,6 @@ class TaskFormWithRedis(forms.ModelForm):
 
     def clean_uuid(self):
         uuid_value = str(self.cleaned_data.get("uuid"))
-
         was_set = cache.set(uuid_value, "submitted", nx=True)
         if not was_set:
             # If 'was_set' is False, the UUID already exists in the cache.

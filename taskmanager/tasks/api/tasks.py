@@ -5,10 +5,12 @@ from accounts.models import TaskManagerUser
 from django.http import Http404, HttpRequest, HttpResponse
 from django_ratelimit.decorators import ratelimit
 from ninja import Path, Router
+from ninja.errors import HttpError
 from ninja.pagination import paginate
 from tasks import services
 from tasks.enums import TaskStatus
 from tasks.schemas import CreateSchemaOut, PathDate, TaskSchemaIn, TaskSchemaOut
+from tasks.services import TaskAlreadyClaimedException
 
 router = Router(tags=["tasks"])
 
@@ -54,3 +56,16 @@ def archived_tasks(request, created_at: PathDate = Path(...)):
     return services.search_tasks(
         created_at=created_at, status=TaskStatus.ARCHIVED.value
     )
+
+
+@router.patch("/{int:task_id}/claim")
+@require_permission("tasks.change_task")
+def claim_task_api(request: HttpRequest, task_id: int):
+    try:
+        services.claim_task(request.user.pk, task_id)
+        return {"message": "Task successfully claimed"}
+    except TaskAlreadyClaimedException:
+        # Raise an HttpError with status code 400
+        raise HttpError(
+            status_code=HTTPStatus.BAD_REQUEST, message="Task already claimed"
+        )

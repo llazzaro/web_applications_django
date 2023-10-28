@@ -126,7 +126,7 @@ def claim_task(user_id, task_id):
         raise TaskAlreadyClaimedException("Task is already claimed or completed.")
 
     # Claim the task
-    task.status = "IN_PROGRESS"
+    task.status = TaskStatus.IN_PROGRESS
     task.owner_id = user_id
     task.save()
 
@@ -142,7 +142,7 @@ def claim_task_optimistically(user_id: int, task_id: int) -> None:
             raise ValidationError("Task is already claimed or completed.")
 
         # Step 3: Claim the task
-        task.status = "IN_PROGRESS"
+        task.status = TaskStatus.IN_PROGRESS
         task.owner_id = user_id
 
         # Step 4: Save the task and update the version,
