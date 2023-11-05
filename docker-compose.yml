@@ -1,5 +1,11 @@
 version: '3.8'
 services:
+  taskmanager:
+    build: .
+    environment:
+      SECRET_KEY: test
+    ports:
+      - "8000:8000"
   db:
     image: postgres:latest
     volumes:
