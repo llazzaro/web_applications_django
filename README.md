@@ -1,5 +1,7 @@
 # Task Management System
 
+You can buy the book here: https://amzn.to/3u7MXVy
+
 ## Description
 This Task Management System is a fully functional Django web application, developed as part of the hands-on learning experience offered by our book "Building Web Applications with Django". This system allows users to create, manage, and track tasks in a simple and intuitive interface.
 
