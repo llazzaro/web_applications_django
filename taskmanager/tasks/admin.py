@@ -2,15 +2,28 @@ from urllib.request import Request
 
 from django.contrib import admin
 from django.db.models import QuerySet
-
 from tasks.models import Task
 
+
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ("title", "description", "status", "owner", "owner", "created_at", "updated_at")
+    list_display = (
+        "title",
+        "description",
+        "status",
+        "owner",
+        "owner",
+        "created_at",
+        "updated_at",
+    )
     list_filter = ("status",)
     search_fields = ("title", "description", "created_at", "updated_at")
 
-    actions = ["mark_as_done", "mark_as_in_progress", "mark_as_unassigned", "mark_as_archived"]
+    actions = [
+        "mark_as_done",
+        "mark_as_in_progress",
+        "mark_as_unassigned",
+        "mark_as_archived",
+    ]
 
     def mark_as_done(self, request: Request, queryset: QuerySet) -> None:
         queryset.update(status="DONE")
@@ -43,5 +56,6 @@ class TaskAdmin(admin.ModelAdmin):
     mark_as_in_progress.short_description = "Mark selected tasks as in progress"
     mark_as_unassigned.short_description = "Mark selected tasks as unassigned"
     mark_as_archived.short_description = "Mark selected tasks as archived"
+
 
 admin.site.register(Task, TaskAdmin)

@@ -10,6 +10,10 @@ packages = [{include = "task_manager"}]
 python = "^3.10"
 django = "4.2.2"
 psycopg = "^3.1.18"
+black = "^24.1.1"
+isort = "^5.13.2"
+flake8 = "^7.0.0"
+pre-commit = "^3.6.0"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -18,3 +22,6 @@ pytest = "^7.4.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 120
