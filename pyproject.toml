@@ -9,6 +9,7 @@ packages = [{include = "task_manager"}]
 [tool.poetry.dependencies]
 python = "^3.10"
 django = "4.2.2"
+psycopg = "^3.1.18"
 
 
 [tool.poetry.group.dev.dependencies]
