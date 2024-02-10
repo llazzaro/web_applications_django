@@ -2,33 +2,20 @@ default_language_version:
   python: python3.10
 
 repos:
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+  - repo: local
     hooks:
-      - id: trailing-whitespace
-      - id: end-of-file-fixer
-      - id: check-yaml
-      - id: check-added-large-files
-      - id: no-commit-to-branch
-        args: [--branch, master]
-
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v3.3.1
-    hooks:
-      - id: pyupgrade
-
-  - repo: https://github.com/pycqa/isort
-    rev: 5.12.0
-    hooks:
-      - id: isort
-
-  - repo: https://github.com/psf/black
-    rev: 23.1.0
-    hooks:
-      - id: black
-
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.0.277
-    hooks:
-      - id: ruff
-        files: taskmanager/
+        - id: black
+          name: black
+          entry: poetry run python -m black --check .
+          language: system
+          types: [ python ]
+        - id: isort
+          name: isort
+          entry: poetry run python -m isort --check-only  .
+          language: system
+          types: [ python ]
+        - id: djlint
+          name: djlint
+          entry: poetry run python -m djlint . --check
+          language: system
+          types: [ html ]
