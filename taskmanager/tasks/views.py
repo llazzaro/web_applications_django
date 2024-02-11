@@ -1,3 +1,4 @@
+from collections import defaultdict
 from datetime import date
 
 from django.core.exceptions import ValidationError
@@ -50,6 +51,24 @@ class TaskDeleteView(ListView):
 
     def get_success_url(self):
         return reverse("task-list")
+
+
+def task_home(request: HttpRequest):
+    tasks = Task.objects.filter(status__in=["UNASSIGNED", "IN_PROGRESS", "DONE", "ARCHIVED"])
+
+    context = defaultdict(list)
+
+    for task in tasks:
+        if task.status == "UNASSIGNED":
+            context["unassigned_tasks"].append(task)
+        elif task.status == "IN_PROGRESS":
+            context["in_progress_tasks"].append(task)
+        elif task.status == "DONE":
+            context["done_tasks"].append(task)
+        elif task.status == "ARCHIVED":
+            context["archived_tasks"].append(task)
+
+    return render(request, "tasks/home.html", context)
 
 
 def task_by_date(request: HttpRequest, by_date: date):
