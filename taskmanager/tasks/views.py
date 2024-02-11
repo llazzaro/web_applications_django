@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.generic import ListView
+from tasks.mixins import SprintTaskWithinRangeMixin
 from tasks.models import Task
 
 
@@ -16,7 +17,7 @@ class TaskDetailView(ListView):
     context_object_name = "task"
 
 
-class TaskCreateView(ListView):
+class TaskCreateView(SprintTaskWithinRangeMixin, ListView):
     model = Task
     template_name = "task_form.html"
     fields = ("name", "description", "start_date", "end_date")
@@ -25,7 +26,7 @@ class TaskCreateView(ListView):
         return reverse("task-detail", kwargs={"pk": self.object.pk})
 
 
-class TaskUpdateView(ListView):
+class TaskUpdateView(SprintTaskWithinRangeMixin, ListView):
     model = Task
     template_name = "task_form.html"
     fields = ("name", "description", "start_date", "end_date")
