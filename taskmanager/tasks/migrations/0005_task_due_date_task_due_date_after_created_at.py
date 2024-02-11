@@ -13,9 +13,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="task",
             name="due_date",
-            field=models.DateField(
-                blank=True, db_comment="The date when the task is due.", null=True
-            ),
+            field=models.DateField(blank=True, db_comment="The date when the task is due.", null=True),
         ),
         migrations.AddConstraint(
             model_name="task",

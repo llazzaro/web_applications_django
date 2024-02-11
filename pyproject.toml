@@ -24,5 +24,11 @@ pytest = "^7.4.0"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.ruff]
+[tool.isort]
+profile = "black"
+
+[tool.black]
 line-length = 120
+
+[tool.djlint]
+profile = "django"

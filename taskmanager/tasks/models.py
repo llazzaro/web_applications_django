@@ -16,9 +16,7 @@ class Epic(models.Model):
     description = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    creator = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="created_epics"
-    )
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="created_epics")
 
 
 class Task(models.Model):
@@ -32,9 +30,7 @@ class Task(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    creator = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="created_tasks"
-    )
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="created_tasks")
     owner = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
@@ -42,12 +38,8 @@ class Task(models.Model):
         blank=True,
         null=True,
     )
-    epic = models.ForeignKey(
-        Epic, on_delete=models.SET_NULL, related_name="tasks", blank=True, null=True
-    )
-    due_date = models.DateField(
-        blank=True, null=True, db_comment="The date when the task is due."
-    )
+    epic = models.ForeignKey(Epic, on_delete=models.SET_NULL, related_name="tasks", blank=True, null=True)
+    due_date = models.DateField(blank=True, null=True, db_comment="The date when the task is due.")
 
     class Meta:
         db_table_comment = "Holds information about tasks."
@@ -71,9 +63,7 @@ class Sprint(models.Model):
     end_date = models.DateField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    creator = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="created_sprints"
-    )
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="created_sprints")
     tasks = models.ManyToManyField(Task, related_name="sprints", blank=True)
 
     class Meta:

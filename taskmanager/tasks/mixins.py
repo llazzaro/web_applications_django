@@ -13,8 +13,6 @@ class SprintTaskWithinRangeMixin:
         if sprint_id:
             if task or request.method == "POST":
                 if not can_add_task_to_sprint(task, sprint_id):
-                    return HttpResponseBadRequest(
-                        "Task's creation date is out of sprint range."
-                    )
+                    return HttpResponseBadRequest("Task's creation date is out of sprint range.")
 
         return super().dispatch(request, *args, **kwargs)
