@@ -1,5 +1,6 @@
 from django.urls import path, register_converter
 from django.views.generic import TemplateView
+from tasks import views
 from tasks.converters import DateConverter
 from tasks.views import (
     TaskCreateView,
@@ -22,4 +23,5 @@ urlpatterns = [
     path("tasks/<int:pk>/edit/", TaskUpdateView.as_view(), name="task-edit"),
     path("tasks/<int:pk>/delete/", TaskDeleteView.as_view(), name="task-delete"),
     path("tasks/<yyyymmdd:start_date>/", views.tasks_by_date, name="task-list-by-date"),
+    path("tasks/sprint/add_task/<int:pk>/", views.create_task_on_sprint, name="task-add-on-sprint"),
 ]
