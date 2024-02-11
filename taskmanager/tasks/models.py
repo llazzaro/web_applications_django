@@ -19,7 +19,11 @@ class Epic(models.Model):
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="created_epics")
 
 
-class Task(models.Model):
+class VersionMixin:
+    version = models.IntegerField(default=0)
+
+
+class Task(VersionMixin, models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True, null=False, default="")
     status = models.CharField(
@@ -40,6 +44,7 @@ class Task(models.Model):
     )
     epic = models.ForeignKey(Epic, on_delete=models.SET_NULL, related_name="tasks", blank=True, null=True)
     due_date = models.DateField(blank=True, null=True, db_comment="The date when the task is due.")
+    version = models.IntegerField(default=0)
 
     class Meta:
         db_table_comment = "Holds information about tasks."

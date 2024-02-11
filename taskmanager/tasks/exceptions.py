@@ -1,0 +1,2 @@
+class TaskAlreadyClaimedException(Exception):
+    pass
