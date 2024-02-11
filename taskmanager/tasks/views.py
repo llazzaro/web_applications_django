@@ -1,5 +1,6 @@
 from datetime import date
 
+from django.core.exceptions import ValidationError
 from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -7,7 +8,8 @@ from django.views.generic import ListView
 from rest_framework import status
 from tasks.exceptions import TaskAlreadyClaimedException
 from tasks.mixins import SprintTaskWithinRangeMixin
-from tasks.models import Task
+from tasks.models import Epic, Sprint, Task
+from tasks.services import sprint as sprint_service
 from tasks.services import task as task_service
 from tasks.services.task import claim_task
 
@@ -86,3 +88,41 @@ def claim_task_view(request: HttpRequest, task_id: int):
     task.owner = request.user
     task.save()
     return redirect("task-detail", task_id=task.id)
+
+
+def create_sprint(request: HttpRequest):
+    if request.method == "POST":
+        sprint_data = {
+            "name": request.POST["name"],
+            "description": request.POST.get("description", ""),
+            "start_date": request.POST["start_date"],
+            "end_date": request.POST["end_date"],
+        }
+        sprint = sprint_service.create_sprint(sprint_data, request.user)
+        return redirect("sprint-detail", sprint_id=sprint.id)
+
+    return Http404("Not found.")
+
+
+def remove_task_from_sprint(request: HttpRequest, task_id: int, sprint_id: int):
+    try:
+        sprint_service.remove_task_from_sprint(task_id, sprint_id)
+        return JsonResponse({"message": "Task removed from sprint successfully."})
+    except Task.DoesNotExist:
+        return HttpResponse("Task does not exist.", status=status.HTTP_404_NOT_FOUND)
+    except Sprint.DoesNotExist:
+        return HttpResponse("Sprint does not exist.", status=status.HTTP_404_NOT_FOUND)
+    except ValidationError as e:
+        return HttpResponse(str(e), status=status.HTTP_409_CONFLICT)
+
+
+def set_sprint_epic(request: HttpRequest, sprint_id: int, epic_id: int):
+    try:
+        sprint_service.set_sprint_epic(sprint_id, epic_id)
+        return JsonResponse({"message": "Sprint epic set successfully."})
+    except Sprint.DoesNotExist:
+        return HttpResponse("Sprint does not exist.", status=status.HTTP_404_NOT_FOUND)
+    except Epic.DoesNotExist:
+        return HttpResponse("Epic does not exist.", status=status.HTTP_404_NOT_FOUND)
+    except ValidationError as e:
+        return HttpResponse(str(e), status=status.HTTP_409_CONFLICT)
