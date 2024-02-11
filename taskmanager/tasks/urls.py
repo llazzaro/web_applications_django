@@ -15,7 +15,7 @@ app_name = "tasks"
 register_converter(DateConverter, "yyyymmdd")
 
 urlpatterns = [
-    path("", TemplateView.as_view(template_name="tasks/home.html"), name="home"),
+    path("", TemplateView.as_view(template_name="tasks/home.html"), name="task-home"),
     path("help/", TemplateView.as_view(template_name="tasks/help.html"), name="help"),
     path("tasks/", TaskListView.as_view(), name="task-list"),
     path("tasks/new/", TaskCreateView.as_view(), name="task-create"),
