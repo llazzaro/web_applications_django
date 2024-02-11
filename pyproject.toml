@@ -14,6 +14,8 @@ black = "^24.1.1"
 isort = "^5.13.2"
 flake8 = "^7.0.0"
 pre-commit = "^3.6.0"
+djlint = "^1.34.1"
+djangorestframework = "^3.14.0"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -23,5 +25,11 @@ pytest = "^7.4.0"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.ruff]
+[tool.isort]
+profile = "black"
+
+[tool.black]
 line-length = 120
+
+[tool.djlint]
+profile = "django"

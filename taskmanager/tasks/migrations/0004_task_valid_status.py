@@ -13,9 +13,7 @@ class Migration(migrations.Migration):
         migrations.AddConstraint(
             model_name="task",
             constraint=models.CheckConstraint(
-                check=models.Q(
-                    ("status__in", ["UNASSIGNED", "IN PROGRESS", "DONE", "ARCHIVED"])
-                ),
+                check=models.Q(("status__in", ["UNASSIGNED", "IN PROGRESS", "DONE", "ARCHIVED"])),
                 name="valid_status",
             ),
         ),

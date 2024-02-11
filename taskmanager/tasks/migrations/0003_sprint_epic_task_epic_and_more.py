@@ -40,9 +40,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "tasks",
-                    models.ManyToManyField(
-                        blank=True, related_name="sprints", to="tasks.task"
-                    ),
+                    models.ManyToManyField(blank=True, related_name="sprints", to="tasks.task"),
                 ),
             ],
         ),
