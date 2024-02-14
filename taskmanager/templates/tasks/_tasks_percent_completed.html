@@ -1,0 +1,5 @@
+{% load tasks_filters %}
+<h2>{{ epic.name }}</h2>
+<p>{{ epic.tasks|percent_complete }}% complete</p>
+<h2>{{ sprint.name }}</h2>
+<p>{{ sprint.tasks|percent_complete }}% complete</p>
