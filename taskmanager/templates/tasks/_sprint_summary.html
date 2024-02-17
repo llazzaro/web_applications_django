@@ -1,9 +1,17 @@
 {% load sprint_tags %}
 {% task_summary sprint as summary %}
-<p>Task summary:</p>
+{% task_priority_summary sprint as task_priority_summary %}
+<h2>Task summary:</h2>
+<p>Status</p>
 <ul>
     <li>Unassgined: {{ summary.UNASSIGNED }}</li>
     <li>In progress: {{ summary.IN_PROGRESS }}</li>
     <li>Done: {{ summary.DONE }}</li>
     <li>Archived: {{ summary.ARCHIVED }}</li>
+</ul>
+<p>Priority</p>
+<ul>
+    <li>Low: {{ task_priority_summary.LOW }}</li>
+    <li>Medium: {{ task_priority_summary.MEDIUM }}</li>
+    <li>High: {{ task_priority_summary.HIGH }}</li>
 </ul>

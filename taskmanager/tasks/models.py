@@ -10,6 +10,12 @@ TASK_STATUS_CHOICES = [
     ("ARCHIVED", "Archived"),
 ]
 
+TASK_PRIORITY_CHOICES = [
+    ("LOW", "Low"),
+    ("MEDIUM", "Medium"),
+    ("HIGH", "High"),
+]
+
 
 class Epic(models.Model):
     name = models.CharField(max_length=200)
@@ -45,6 +51,12 @@ class Task(VersionMixin, models.Model):
     epic = models.ForeignKey(Epic, on_delete=models.SET_NULL, related_name="tasks", blank=True, null=True)
     due_date = models.DateField(blank=True, null=True, db_comment="The date when the task is due.")
     version = models.IntegerField(default=0)
+    priority = models.CharField(
+        max_length=20,
+        choices=TASK_PRIORITY_CHOICES,
+        default="LOW",
+        db_comment="Can be LOW, MEDIUM, or HIGH",
+    )
 
     class Meta:
         db_table_comment = "Holds information about tasks."
