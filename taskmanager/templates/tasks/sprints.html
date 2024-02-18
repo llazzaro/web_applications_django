@@ -1,0 +1,38 @@
+{% extends "tasks/base.html" %}
+{% block content %}
+    <div class="container mt-5">
+        <h2>Sprints</h2>
+        <div class="row mt-4">
+            <!-- Unassigned Tasks -->
+            <div class="col-md-3">
+                <h4>Active</h4>
+                {% for sprint in active %}
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a href="{% url 'sprints:sprint-detail' sprint.pk %}">{{ sprint.name }}</a>
+                            </h5>
+                            <p class="card-text">Creator: {{ sprint.creator.username|default:"None" }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <!-- Completed Sprints -->
+            <div class="col-md-3">
+                <h4>Completed</h4>
+                {% for sprint in completed %}
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a href="{% url 'sprints:sprint-detail' sprint.pk %}">{{ sprint.name }}</a>
+                            </h5>
+                            <p class="card-text">Creator: {{ sprint.creator.username|default:"None" }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <!-- End of row -->
+    </div>
+    <!-- End of container -->
+{% endblock %}

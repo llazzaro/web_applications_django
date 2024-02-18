@@ -21,6 +21,22 @@ def create_sprint(sprint_data: dict[str, str], creator: User) -> Sprint:
     return sprint
 
 
+def get_grouped_sprints() -> dict[str, list[Sprint]]:
+    """
+    Get all sprints grouped by status.
+    """
+    sprints = Sprint.objects.all().order_by("start_date")
+    grouped_sprints = {"active": [], "completed": []}
+
+    for sprint in sprints:
+        if sprint.end_date >= sprint.start_date:
+            grouped_sprints["active"].append(sprint)
+        else:
+            grouped_sprints["completed"].append(sprint)
+
+    return grouped_sprints
+
+
 @transaction.atomic
 def remove_task_from_sprint(task_id: int, sprint_id: int) -> None:
     """
