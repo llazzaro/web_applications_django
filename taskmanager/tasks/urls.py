@@ -24,4 +24,6 @@ urlpatterns = [
     path("tasks/<int:pk>/delete/", TaskDeleteView.as_view(), name="task-delete"),
     path("tasks/<yyyymmdd:start_date>/", views.task_by_date, name="task-list-by-date"),
     path("tasks/sprint/add_task/<int:pk>/", views.create_task_on_sprint, name="task-add-on-sprint"),
+    path("contact/", views.ContactFormView.as_view(), name="contact"),
+    path("contact-success/", TemplateView.as_view(template_name="tasks/contact_success.html"), name="contact-success"),
 ]

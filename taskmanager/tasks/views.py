@@ -2,16 +2,24 @@ from collections import defaultdict
 from datetime import date
 
 from django.core.exceptions import ValidationError
-from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
+from django.http import (
+    Http404,
+    HttpRequest,
+    HttpResponse,
+    HttpResponseRedirect,
+    JsonResponse,
+)
 from django.shortcuts import redirect, render
-from django.urls import reverse
-from django.views.generic import ListView
+from django.urls import reverse, reverse_lazy
+from django.views.generic import CreateView, FormView, ListView
 from rest_framework import status
 from tasks.exceptions import TaskAlreadyClaimedException
+from tasks.forms import ContactForm, TaskForm
 from tasks.mixins import SprintTaskWithinRangeMixin
 from tasks.models import Epic, Sprint, Task
 from tasks.services import sprint as sprint_service
 from tasks.services import task as task_service
+from tasks.services.email import send_contact_email
 from tasks.services.task import claim_task
 
 
@@ -28,10 +36,10 @@ class TaskDetailView(ListView):
     context_object_name = "task"
 
 
-class TaskCreateView(SprintTaskWithinRangeMixin, ListView):
+class TaskCreateView(SprintTaskWithinRangeMixin, CreateView):
     model = Task
     template_name = "task_form.html"
-    fields = ("name", "description", "start_date", "end_date")
+    form_class = TaskForm
 
     def get_success_url(self):
         return reverse("task-detail", kwargs={"pk": self.object.pk})
@@ -52,6 +60,23 @@ class TaskDeleteView(ListView):
 
     def get_success_url(self):
         return reverse("task-list")
+
+
+class ContactFormView(FormView):
+    template_name = "tasks/contact_form.html"
+    form_class = ContactForm
+    success_url = reverse_lazy("tasks:contact-success")
+
+    def form_valid(self, form: ContactForm) -> HttpResponseRedirect:
+        subject = form.cleaned_data["subject"]
+        message = form.cleaned_data["message"]
+        from_email = form.cleaned_data["from_email"]
+
+        send_contact_email(
+            subject=subject, message=message, from_email=from_email, to_email="cardenasmatias.1990@gmail.com"
+        )
+
+        return super().form_valid(form)
 
 
 ## SPRINTS

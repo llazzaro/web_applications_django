@@ -102,3 +102,8 @@ class Sprint(models.Model):
                 name="end_date_after_start_date",
             ),
         ]
+
+
+class SubscribedEmail(models.Model):
+    email = models.EmailField(unique=True)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name="watchers")
