@@ -1,5 +1,7 @@
+import markdown
 from django import template
 from django.db.models import Count, Q
+from tasks.models import Comment, Task
 
 register = template.Library()
 
@@ -14,3 +16,8 @@ def percent_complete(tasks):
         return percent_done
     else:
         return 0
+
+
+@register.filter
+def markdown_to_html(comment: Comment):
+    return markdown.markdown(comment.content, output_format="html5", extensions=["escape_html"])
