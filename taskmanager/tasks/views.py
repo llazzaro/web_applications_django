@@ -36,13 +36,14 @@ class TaskDetailView(ListView):
     context_object_name = "task"
 
 
-class TaskCreateView(SprintTaskWithinRangeMixin, CreateView):
+class TaskCreateView(CreateView):
     model = Task
-    template_name = "task_form.html"
+    template_name = "tasks/task_form.html"
     form_class = TaskForm
 
     def get_success_url(self):
-        return reverse("task-detail", kwargs={"pk": self.object.pk})
+        self.object.save()
+        return reverse("task-detail", kwargs={"pk": self.object.id})
 
 
 class TaskUpdateView(SprintTaskWithinRangeMixin, ListView):

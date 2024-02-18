@@ -9,7 +9,7 @@ class TaskForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(TaskForm, self).__init__(*args, **kwargs)
-        if self.instace and self.instance.pk:
+        if self.instance and self.instance.pk:
             self.fields["watchers"].initial = ", ".join([watcher.email for watcher in self.instance.watchers.all()])
 
     class Meta:
@@ -19,6 +19,8 @@ class TaskForm(forms.ModelForm):
             "description",
             "status",
             "watchers",
+            "file_upload",
+            "image_upload",
         )
 
     def save(self, commit=True):
