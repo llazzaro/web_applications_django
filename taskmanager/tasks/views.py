@@ -15,6 +15,7 @@ from tasks.services import task as task_service
 from tasks.services.task import claim_task
 
 
+## TASKS
 class TaskListView(ListView):
     model = Task
     template_name = "task_list.html"
@@ -53,6 +54,21 @@ class TaskDeleteView(ListView):
         return reverse("task-list")
 
 
+## SPRINTS
+
+
+class SprintListView(ListView):
+    model = Sprint
+    template_name = "sprints.html"
+    context_object_name = "sprints"
+
+
+class SprintDetailView(ListView):
+    model = Sprint
+    template_name = "sprint_detail.html"
+    context_object_name = "sprint"
+
+
 def task_home(request: HttpRequest):
     tasks = Task.objects.filter(status__in=["UNASSIGNED", "IN_PROGRESS", "DONE", "ARCHIVED"])
 
@@ -69,6 +85,11 @@ def task_home(request: HttpRequest):
             context["archived_tasks"].append(task)
 
     return render(request, "tasks/home.html", context)
+
+
+def sprint_home(request: HttpRequest):
+    context = sprint_service.get_grouped_sprints()
+    return render(request, "tasks/sprints.html", context)
 
 
 def task_by_date(request: HttpRequest, by_date: date):

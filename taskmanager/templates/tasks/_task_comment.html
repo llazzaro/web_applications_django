@@ -1,0 +1,3 @@
+{% load tasks_filters %}
+<h2>{{ comment.date }} by {{ comment.user.name }}</h2>
+<p>{{ comment.content|markdown_to_html }}</p>

@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>{{ sprint.name }}</h1>
+    <p>{{ sprint.description }}</p>
+    <h2>Tasks</h2>
+    <ul>
+        {% for task in sprint.tasks %}<li>{{ task.name }}</li>{% endfor %}
+    </ul>
+    <a href="{% url 'sprints:sprint-list' %}">Back to sprints</a>
+{% endblock %}
