@@ -29,6 +29,18 @@ class VersionMixin:
     version = models.IntegerField(default=0)
 
 
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    task = models.ForeignKey("Task", on_delete=models.CASCADE, related_name="comments")
+    content = models.TextField(max_length=400)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table_comment = "Holds comments for tasks."
+        ordering = ["-created_at"]
+
+
 class Task(VersionMixin, models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True, null=False, default="")
