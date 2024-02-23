@@ -14,9 +14,10 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, FormView, ListView
 from rest_framework import status
 from tasks.exceptions import TaskAlreadyClaimedException
-from tasks.forms import ContactForm, TaskForm
+from tasks.forms import ContactForm, EpicFormSet, TaskForm
 from tasks.mixins import SprintTaskWithinRangeMixin
 from tasks.models import Epic, Sprint, Task
+from tasks.services import epic as epic_service
 from tasks.services import sprint as sprint_service
 from tasks.services import task as task_service
 from tasks.services.email import send_contact_email
@@ -192,3 +193,27 @@ def set_sprint_epic(request: HttpRequest, sprint_id: int, epic_id: int):
         return HttpResponse("Epic does not exist.", status=status.HTTP_404_NOT_FOUND)
     except ValidationError as e:
         return HttpResponse(str(e), status=status.HTTP_409_CONFLICT)
+
+
+def manage_epic_tasks(request: HttpRequest, epic_id: int) -> HttpResponse:
+    epic = epic_service.get_epic_by_id(epic_id)
+
+    if not epic:
+        raise Http404("Epic does not exist.")
+
+    if request.method == "POST":
+        formset = EpicFormSet(request.POST, queryset=task_service.get_tasks_by_epic(epic_id))
+
+        if formset.is_valid():
+            tasks = formset.save(commit=False)
+            task_service.save_tasks_for_epic(epic, tasks)
+            formset.save_m2m()
+            return redirect("tasks:task-list")
+    else:
+        formset = EpicFormSet(queryset=task_service.get_tasks_by_epic(epic_id))
+
+    return render(
+        request=request,
+        template_name="tasks/manage_epic.html",
+        context={"formset": formset, "epic": epic},
+    )
