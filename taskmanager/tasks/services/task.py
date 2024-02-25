@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from tasks.exceptions import TaskAlreadyClaimedException
-from tasks.models import Sprint, Task
+from tasks.models import Epic, Sprint, Task
 
 
 def can_add_task_to_sprint(task: Task, sprint_id: int) -> bool:
@@ -21,6 +21,21 @@ def get_tasks_by_date(by_date: date) -> list:
     Get tasks by date.
     """
     return Task.objects.filter(created_at__date=by_date)
+
+
+def get_tasks_by_epic(epic_id: int) -> list:
+    """
+    Get tasks by epic.
+    """
+    return Task.objects.filter(epic_id=epic_id)
+
+
+def save_tasks_for_epic(epic_id: int, tasks: list[Task]) -> None:
+    """
+    Save tasks for an epic.
+    """
+    epic = get_object_or_404(Epic, id=epic_id)
+    epic.tasks.add(*tasks)
 
 
 def create_task_and_add_to_sprint(

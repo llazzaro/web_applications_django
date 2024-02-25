@@ -26,7 +26,9 @@ SECRET_KEY = "django-insecure-$dy#az$c&9r4ul9^vve4+u@3s4k84@1x3s*4p!*mcymg+b0$dg
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "localhost",
+]
 
 
 # Application definition
@@ -40,6 +42,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "tasks",
     "storages",
+    "widget_tweaks",
 ]
 
 MIDDLEWARE = [
@@ -125,6 +128,10 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
+MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_URL = "/media/"
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
@@ -135,3 +142,14 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # STORAGES = {"staticfiles": {"BACKEND": "storages.backends.s3boto3.S3Boto3Storage"}}
 # AWS_S3_ACCESS_KEY_ID = os.getenv("AWS_S3_ACCESS_KEY_ID")
 # AWS_S3_SECRET_ACCESS_KEY = os.getenv("AWS_S3_SECRET_ACCESS_KEY")
+
+if DEBUG:
+    # Using the console backend for emails in development will print emails to the console
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = os.getenv("EMAIL_HOST", "localhost")
+    EMAIL_PORT = int(os.getenv("EMAIL_PORT", "1025"))
+    EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "false").lower() == "true"
+    EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "default@example.com")
+    EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "password")

@@ -69,6 +69,8 @@ class Task(VersionMixin, models.Model):
         default="LOW",
         db_comment="Can be LOW, MEDIUM, or HIGH",
     )
+    file_upload = models.FileField(upload_to="tasks/files/", blank=True, null=True)
+    image_upload = models.ImageField(upload_to="tasks/images/", blank=True, null=True)
 
     class Meta:
         db_table_comment = "Holds information about tasks."
@@ -102,3 +104,8 @@ class Sprint(models.Model):
                 name="end_date_after_start_date",
             ),
         ]
+
+
+class SubscribedEmail(models.Model):
+    email = models.EmailField(unique=True)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name="watchers")
