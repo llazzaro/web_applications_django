@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "tasks",
     "storages",
     "widget_tweaks",
+    "accounts",
 ]
 
 MIDDLEWARE = [
@@ -109,6 +110,9 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
+
+LOGIN_REDIRECT_URL = "tasks:task-home"
+LOGOUT_REDIRECT_URL = "accounts:login"
 
 
 # Internationalization
