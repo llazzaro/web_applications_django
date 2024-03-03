@@ -52,7 +52,7 @@ class Task(VersionMixin, models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="created_tasks")
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="created_tasks", null=False)
     owner = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
@@ -84,6 +84,9 @@ class Task(VersionMixin, models.Model):
                 check=models.Q(due_date__gt=models.F("created_at")),
                 name="due_date_after_created_at",
             ),
+        ]
+        permissions = [
+            ("custom_task", "Custom Task Permission"),
         ]
 
 

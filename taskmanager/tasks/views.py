@@ -1,6 +1,8 @@
 from collections import defaultdict
 from datetime import date
 
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import ValidationError
 from django.http import (
     Http404,
@@ -9,9 +11,9 @@ from django.http import (
     HttpResponseRedirect,
     JsonResponse,
 )
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
-from django.views.generic import CreateView, FormView, ListView
+from django.views.generic import CreateView, DetailView, FormView, ListView
 from rest_framework import status
 from tasks.exceptions import TaskAlreadyClaimedException
 from tasks.forms import ContactForm, EpicFormSet, TaskForm
@@ -25,35 +27,55 @@ from tasks.services.task import claim_task
 
 
 ## TASKS
-class TaskListView(ListView):
+class TaskListView(PermissionRequiredMixin, ListView):
     model = Task
+    permission_required = (
+        "tasks.view_task",
+        "tasks.custom_task",
+    )
+    login_url = reverse_lazy("accounts:login")
     template_name = "task_list.html"
     context_object_name = "tasks"
 
 
-class TaskDetailView(ListView):
+class TaskDetailView(DetailView):
     model = Task
-    template_name = "task_detail.html"
+    template_name = "tasks/task_detail.html"
     context_object_name = "task"
 
 
-class TaskCreateView(CreateView):
+class TaskCreateView(LoginRequiredMixin, CreateView):
     model = Task
     template_name = "tasks/task_form.html"
+    context_object_name = "task"
     form_class = TaskForm
 
     def get_success_url(self):
         self.object.save()
-        return reverse("task-detail", kwargs={"pk": self.object.id})
+        return reverse("tasks:task-detail", kwargs={"pk": self.object.id})
+
+    def form_valid(self, form):
+        form.instance.creator = self.request.user
+        return super().form_valid(form)
 
 
-class TaskUpdateView(SprintTaskWithinRangeMixin, ListView):
+class TaskUpdateView(PermissionRequiredMixin, SprintTaskWithinRangeMixin, ListView):
     model = Task
     template_name = "task_form.html"
     fields = ("name", "description", "start_date", "end_date")
 
     def get_success_url(self):
         return reverse("task-detail", kwargs={"pk": self.object.pk})
+
+    def has_permission(self):
+        if not (has_general_permission := super().has_permission()):
+            return False
+
+        task_id = self.kwargs.get("pk")
+        task = get_object_or_404(Task, id=task_id)
+        is_creator_or_owner = task.creator == self.request.user or task.owner == self.request.user
+
+        return has_general_permission and is_creator_or_owner
 
 
 class TaskDeleteView(ListView):
@@ -125,6 +147,7 @@ def task_by_date(request: HttpRequest, by_date: date):
     return render(request=request, template_name="task_list.html", context=context)
 
 
+@permission_required("tasks.add_task")
 def create_task_on_sprint(request: HttpRequest, sprint_id: int):
     if request.method == "POST":
         task_data: dict[str, str] = {

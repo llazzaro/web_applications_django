@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "tasks",
     "storages",
     "widget_tweaks",
+    "accounts",
 ]
 
 MIDDLEWARE = [
@@ -95,6 +96,10 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
+# AUTHENTICATION_BACKENDS = [
+#     "accounts.backends.OrganizationUsernameOrEmailBackend",
+# ]
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -109,6 +114,12 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
+
+# AUTH_USER_MODEL = "accounts.TaskManagerUser"
+
+LOGIN_URL = "accounts:login"
+LOGIN_REDIRECT_URL = "tasks:task-home"
+LOGOUT_REDIRECT_URL = "accounts:login"
 
 
 # Internationalization
