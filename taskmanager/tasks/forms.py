@@ -27,7 +27,7 @@ class TaskForm(forms.ModelForm):
     def save(self, commit=True):
         task = super(TaskForm, self).save(commit=False)
 
-        if commit:
+        if commit and task.pk:
             task.watchers.all().delete()
 
         for email_str in self.cleaned_data["watchers"]:

@@ -25,19 +25,15 @@
                                        name="{{ form.password.name }}">
                                 {% if form.password.errors %}<div class="text-danger">{{ form.password.errors|first }}</div>{% endif %}
                             </div>
-                            {#            <div class="mb-3">#}
-                            {#              <label for="{{ form.organization_id.id_for_label }}" class="form-label">Organization ID</label>#}
-                            {#              <input type="number"
-                     class="form-control"
-                     id="{{ form.organization_id.id_for_label }}"
-                     name="{{ form.organization_id.name }}"
-                     required>#}
-                            {#              {% if form.organization_id.errors %}#}
-                            {#                <div class="text-danger">#}
-                            {#                  {{ form.organization_id.errors|first }}#}
-                            {#                </div>#}
-                            {#              {% endif %}#}
-                            {#            </div>#}
+                            <div class="mb-3">
+                                <label for="{{ form.organization_id.id_for_label }}" class="form-label">Organization ID</label>
+                                <input type="number"
+                                       class="form-control"
+                                       id="{{ form.organization_id.id_for_label }}"
+                                       name="{{ form.organization_id.name }}"
+                                       required>
+                                {% if form.organization_id.errors %}<div class="text-danger">{{ form.organization_id.errors|first }}</div>{% endif %}
+                            </div>
                             <div class="d-grid gap-2">
                                 <button type="submit" class="btn btn-primary">Login</button>
                             </div>

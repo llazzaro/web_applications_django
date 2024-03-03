@@ -23,7 +23,7 @@
                 </div>
             {% endif %}
             <div class="mt-4 d-inline-block">
-                <a href="{% url 'tasks:task-update' task.id %}"
+                <a href="{% url 'tasks:task-detail' task.id %}"
                    class="btn btn-primary me-2">Edit</a>
                 <a href="{% url 'tasks:task-delete' task.id %}"
                    class="btn btn-danger me-2">Delete</a>
