@@ -50,4 +50,5 @@ urlpatterns = [
         PasswordResetCompleteView.as_view(template_name="accounts/password_reset_complete.html"),
         name="password_reset_complete",
     ),
+    path("token/", views.token_generation_view, name="api-token"),
 ]

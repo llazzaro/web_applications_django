@@ -123,6 +123,7 @@ LOGIN_URL = "accounts:login"
 LOGIN_REDIRECT_URL = "tasks:task-home"
 LOGOUT_REDIRECT_URL = "accounts:login"
 
+JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "jwt_secret")
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

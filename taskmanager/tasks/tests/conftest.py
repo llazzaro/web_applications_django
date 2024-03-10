@@ -32,6 +32,19 @@ def user():
 
 
 @pytest.fixture
+def jwt_auth_token(user):
+    from accounts.services.auth import issue_jwt_token
+
+    token = issue_jwt_token(user)
+    return token
+
+
+@pytest.fixture
+def auth_headers(jwt_auth_token: str) -> dict:
+    return {"Authorization": f"Bearer {jwt_auth_token}"}
+
+
+@pytest.fixture
 def task(user) -> Task:
     task = Task.objects.create(title="Test Task", description="Test Description", creator=user)
     return task

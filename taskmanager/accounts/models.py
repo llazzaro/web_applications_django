@@ -1,6 +1,17 @@
+import uuid
+
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser, User
 from django.db import models
+
+
+class APIToken(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+
+    def __str__(self):
+        return str(self.token)
+
 
 # class Organization(models.Model):
 #     name = models.CharField(max_length=255)

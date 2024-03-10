@@ -4,10 +4,11 @@ from django.http import Http404, HttpRequest, HttpResponse
 from ninja import Path, Router
 from ninja.pagination import paginate
 from tasks.api.schemas import PathDate, TaskSchemaIn, TaskSchemaOut
+from tasks.api.security import JWTAuth
 from tasks.enums import TaskStatus
 from tasks.services import task as task_service
 
-api_router = Router(tags=["tasks"])
+api_router = Router(tags=["tasks"], auth=JWTAuth())
 
 # Example of using ModelSchema
 #

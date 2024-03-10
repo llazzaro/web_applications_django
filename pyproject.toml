@@ -23,6 +23,7 @@ pillow = "^10.2.0"
 django-ninja = "^1.1.0"
 pytest-django = "^4.8.0"
 factory-boy = "^3.3.0"
+pyjwt = "^2.8.0"
 
 
 [tool.poetry.group.dev.dependencies]
