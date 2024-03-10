@@ -1,9 +1,10 @@
 from http import HTTPStatus
 
 from django.http import Http404, HttpRequest, HttpResponse
-from ninja import Router
+from ninja import Path, Router
 from ninja.pagination import paginate
-from tasks.api.schemas import TaskSchemaIn, TaskSchemaOut
+from tasks.api.schemas import PathDate, TaskSchemaIn, TaskSchemaOut
+from tasks.enums import TaskStatus
 from tasks.services import task as task_service
 
 api_router = Router(tags=["tasks"])
@@ -60,3 +61,9 @@ def delete_task(request: HttpRequest, task_id: int):
         raise Http404("Task not found")
 
     return task
+
+
+@api_router.get("/archive/{year}/{month}/{day}", response=list[TaskSchemaOut])
+@paginate
+def archived_tasks(request: HttpRequest, created_at: PathDate = Path(...)):
+    return task_service.search_tasks(created_at=created_at.value(), status=TaskStatus.ARCHIVED.value)

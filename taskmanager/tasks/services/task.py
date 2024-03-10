@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.shortcuts import get_object_or_404
+from tasks.enums import TaskStatus
 from tasks.exceptions import TaskAlreadyClaimedException
 from tasks.models import Epic, Sprint, Task
 
@@ -110,6 +111,11 @@ def claim_task_optimistically(user_id: int, task_id: int) -> None:
             raise ValidationError("Another transaction updated the task. Please try again.")
     except Task.DoesNotExist:
         raise ValidationError("Task does not exist.")
+
+
+def search_tasks(created_at: date, status: TaskStatus) -> list[Task]:
+    tasks = Task.objects.filter(created_at__date=created_at, status=status).order_by("status", "created_at")
+    return tasks
 
 
 def list_tasks() -> list[Task]:

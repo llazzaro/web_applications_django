@@ -36,3 +36,18 @@ def test_delete_task(client, user, task):
 
     assert response.status_code == 204
     assert response.content == b""
+
+
+def test_archived_tasks(client, user, archived_task):
+    response = client.get(f"/archive/2022/12/31")
+    assert response.status_code == 200
+    assert response.json() == {
+        "items": [{"title": "Test Task", "description": "Test Description", "id": 1}],
+        "count": 1,
+    }
+
+
+def test_archived_tasks_no_archived_tasks(client, user, task):
+    response = client.get(f"/archive/2022/12/31")
+    assert response.status_code == 200
+    assert response.json() == {"items": [], "count": 0}
