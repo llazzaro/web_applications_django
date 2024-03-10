@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 
+from tasks.api.pagination import TaskManagerPagination
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -165,3 +167,5 @@ else:
     EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "false").lower() == "true"
     EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "default@example.com")
     EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "password")
+
+NINJA_PAGINATION_CLASS = TaskManagerPagination

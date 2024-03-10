@@ -2,6 +2,7 @@ from http import HTTPStatus
 
 from django.http import Http404, HttpRequest, HttpResponse
 from ninja import Router
+from ninja.pagination import paginate
 from tasks.api.schemas import TaskSchemaIn, TaskSchemaOut
 from tasks.services import task as task_service
 
@@ -19,6 +20,7 @@ api_router = Router(tags=["tasks"])
 #     ]
 
 
+@paginate
 @api_router.get("/", response=list[TaskSchemaOut])
 def list_tasks(request: HttpRequest):
     return task_service.list_tasks()
