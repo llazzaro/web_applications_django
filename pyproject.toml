@@ -21,6 +21,8 @@ markdown = "^3.5.2"
 django-widget-tweaks = "^1.5.0"
 pillow = "^10.2.0"
 django-ninja = "^1.1.0"
+pytest-django = "^4.8.0"
+factory-boy = "^3.3.0"
 
 
 [tool.poetry.group.dev.dependencies]

@@ -110,3 +110,48 @@ def claim_task_optimistically(user_id: int, task_id: int) -> None:
             raise ValidationError("Another transaction updated the task. Please try again.")
     except Task.DoesNotExist:
         raise ValidationError("Task does not exist.")
+
+
+def list_tasks() -> list[Task]:
+    """
+    List tasks.
+    """
+    return list(Task.objects.all())
+
+
+def create_task(creator: User, title: str, description: str) -> Task:
+    """
+    Create a task.
+    """
+    return Task.objects.create(
+        title=title,
+        description=description,
+        creator=creator,
+    )
+
+
+def get_task(task_id: int) -> Task:
+    """
+    Get a task.
+    """
+    return Task.objects.get(id=task_id)
+
+
+def update_task(task_id: int, title: str, description: str) -> Task:
+    """
+    Update a task.
+    """
+    task = Task.objects.get(id=task_id)
+    task.title = title
+    task.description = description
+    task.save()
+    return task
+
+
+def delete_task(task_id: int) -> Task:
+    """
+    Delete a task.
+    """
+    task = Task.objects.get(id=task_id)
+    task.delete()
+    return task
