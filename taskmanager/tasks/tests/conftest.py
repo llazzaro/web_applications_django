@@ -42,6 +42,6 @@ def archived_task(user) -> Task:
     task = Task.objects.create(
         title="Test Task", description="Test Description", creator=user, status=TaskStatus.ARCHIVED.value
     )
-    task.created_at = "2022-12-31"
+    task.created_at = "2024-12-31"
     task.save()
     return task

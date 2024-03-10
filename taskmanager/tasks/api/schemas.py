@@ -1,6 +1,7 @@
 import datetime
 
 from ninja import Field, Schema
+from tasks.enums import TaskStatus
 
 
 class TaskSchemaIn(Schema):
@@ -20,12 +21,20 @@ class TaskSchemaOut(TaskSchemaIn):
 
 
 class PathDate(Schema):
-    year: int
-    month: int
-    day: int
+    year: int = Field(..., ge=2024)
+    month: int = Field(..., ge=1, le=12)
+    day: int = Field(..., ge=1, le=31)
 
     class Meta:
         description = "The date in the path."
 
     def value(self):
         return datetime.date(self.year, self.month, self.day)
+
+
+class TaskFilterSchema(Schema):
+    title: str | None
+    tatus: TaskStatus | None
+
+    class Meta:
+        description = "The filter for tasks."
