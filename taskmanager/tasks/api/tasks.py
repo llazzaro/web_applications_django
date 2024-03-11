@@ -1,5 +1,6 @@
 from http import HTTPStatus
 
+from accounts.services.auth import require_permission
 from django.http import Http404, HttpRequest, HttpResponse
 from ninja import Path, Router
 from ninja.pagination import paginate
@@ -29,6 +30,7 @@ def list_tasks(request: HttpRequest):
 
 
 @api_router.post("/", response={HTTPStatus.CREATED: TaskSchemaOut})
+@require_permission("tasks.add_task")
 def create_task(request: HttpRequest, task_in: TaskSchemaIn):
     creator = request.user
     return task_service.create_task(creator, **task_in.dict())

@@ -1,4 +1,5 @@
 import pytest
+from django.contrib.auth.models import Permission
 from tasks.models import Task
 
 
@@ -8,7 +9,21 @@ def test_get_tasks(client, user, auth_headers):
     assert response.json() == []
 
 
+def test_create_task_not_authorized(client, user):
+    response = client.post("/", json={"title": "Test Task", "description": "Test Description"}, user=user)
+    assert response.status_code == 401
+
+
+def test_create_task_forbidden(client, user, auth_headers):
+    response = client.post(
+        "/", json={"title": "Test Task", "description": "Test Description"}, user=user, headers=auth_headers
+    )
+    assert response.status_code == 403
+
+
 def test_create_task(client, user, auth_headers):
+    permission = Permission.objects.get(codename="add_task")
+    user.user_permissions.add(permission.pk)
     response = client.post(
         "/", json={"title": "Test Task", "description": "Test Description"}, user=user, headers=auth_headers
     )
